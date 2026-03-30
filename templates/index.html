@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FootTrack AI — World Heritage Footfall Predictor</title>
+
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/typed.js@2.0.16/dist/typed.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div id="cursor"></div>
+    <div id="cursor-dot"></div>
+    <div class="grid-bg"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <nav class="container"
+        style="display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; left: 0; right: 0; z-index: 100;">
+        <h2 style="color: var(--primary-color);">FOOTTRACK AI</h2>
+        <div style="display: flex; gap: 2rem;">
+            <a href="#hero" style="color: white; text-decoration: none;">HOME</a>
+            <a href="#map-section" style="color: white; text-decoration: none;">MAP</a>
+            <a href="#predict" style="color: white; text-decoration: none;">PREDICT</a>
+            <a href="#analytics" style="color: white; text-decoration: none;">ANALYTICS</a>
+        </div>
+    </nav>
+
+    <section id="hero" class="hero container">
+        <h1>FOOTTRACK AI</h1>
+        <div id="tagline" class="hero-tagline"></div>
+        <div style="margin-top: 3rem;">
+            <a href="#map-section" class="btn-primary">EXPLORE WORLD</a>
+        </div>
+    </section>
+
+    <section id="map-section" class="container">
+        <h2 class="bebas" style="font-size: 3rem; margin-bottom: 1rem;">GLOBAL FOOTFALL MAP</h2>
+        <div id="map" class="glass-card"></div>
+    </section>
+
+    <section id="predict" class="container">
+        <h2 class="bebas" style="font-size: 3rem; margin-bottom: 2rem;">NEURAL PREDICTION PANEL</h2>
+        <div class="predict-grid">
+            <div class="glass-card">
+                <div class="input-group">
+                    <label>SITE SELECTION</label>
+                    <select id="siteSelect" class="glass-card"
+                        style="width: 100%; color: white; background: transparent;">
+                        <option value="1">Taj Mahal</option>
+                        <option value="2">Eiffel Tower</option>
+                        <option value="3">Great Wall of China</option>
+                        <option value="4">Colosseum</option>
+                        <option value="5">Machu Picchu</option>
+                        <option value="6">Christ the Redeemer</option>
+                        <option value="7">Chichen Itza</option>
+                        <option value="8">Petra</option>
+                        <option value="9">Angkor Wat</option>
+                        <option value="10">Stonehenge</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>HOUR OF DAY <span class="slider-val" id="hourVal">12</span></label>
+                    <input type="range" id="hourRange" min="6" max="21" value="12"
+                        oninput="document.getElementById('hourVal').innerText = this.value">
+                </div>
+                <div class="input-group">
+                    <label>TEMPERATURE (°C) <span class="slider-val" id="tempVal">25</span></label>
+                    <input type="range" id="tempRange" min="-10" max="50" value="25"
+                        oninput="document.getElementById('tempVal').innerText = this.value">
+                </div>
+                <div class="input-group">
+                    <label>MOBILE SIGNALS <span class="slider-val" id="signalsVal">25000</span></label>
+                    <input type="range" id="signalsRange" min="5000" max="45000" value="25000"
+                        oninput="document.getElementById('signalsVal').innerText = this.value">
+                </div>
+                <div class="input-group">
+                    <label>HUMIDITY (%) <span class="slider-val" id="humVal">50</span></label>
+                    <input type="range" id="humRange" min="0" max="100" value="50"
+                        oninput="document.getElementById('humVal').innerText = this.value">
+                </div>
+                <div class="input-group">
+                    <label>WIFI CONNECTIONS <span class="slider-val" id="wifiVal">3500</span></label>
+                    <input type="range" id="wifiRange" min="500" max="20000" value="3500"
+                        oninput="document.getElementById('wifiVal').innerText = this.value">
+                </div>
+                <div class="input-group">
+                    <label>ML ENGINE</label>
+                    <select id="modelSelect" class="glass-card"
+                        style="width: 100%; color: white; background: transparent;">
+                        <option value="random_forest">Random Forest (Ensemble)</option>
+                        <option value="gradient_boosting">Gradient Boosting</option>
+                        <option value="linear_regression">Linear Regression</option>
+                    </select>
+                </div>
+                <button id="predictBtn" class="btn-primary" style="width: 100%;">GENERATE PREDICTION</button>
+            </div>
+
+            <div class="glass-card"
+                style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <h3 id="selectedSiteName" style="color: var(--primary-color);">SELECT A SITE</h3>
+                <div style="font-size: 5rem; font-family: 'Bebas Neue'; color: var(--secondary-color);"
+                    id="predictionVal">0</div>
+                <div style="font-size: 1.2rem; margin-bottom: 2rem;">ESTIMATED FOOTFALL</div>
+                <div class="glass-card" style="padding: 1rem; color: var(--accent-color);">
+                    CONFIDENCE INTERVAL: <span id="confidenceVal">±000</span>
+                </div>
+                <div class="chart-container" style="width: 100%; margin-top: 2rem;">
+                    <canvas id="predictionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="analytics" class="container">
+        <h2 class="bebas" style="font-size: 3rem; margin-bottom: 2rem;">GLOBAL ANALYTICS</h2>
+        <div class="charts-grid">
+            <div class="glass-card">
+                <h3>HOURLY TRAFFIC PATTERNS</h3>
+                <div class="chart-container"><canvas id="hourlyChart"></canvas></div>
+            </div>
+            <div class="glass-card">
+                <h3>SITE POPULARITY INDEX</h3>
+                <div class="chart-container"><canvas id="siteChart"></canvas></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="visualizer" class="container">
+        <h2 class="bebas" style="font-size: 3rem; margin-bottom: 2rem;">REAL-TIME SIGNAL VISUALIZER</h2>
+        <div class="glass-card" style="height: 400px; display: flex; justify-content: center; align-items: center;">
+            <svg id="signalSVG" width="800" height="300" viewBox="0 0 800 300">
+                <!-- Towers -->
+                <g id="towers">
+                    <circle cx="100" cy="150" r="10" fill="var(--primary-color)" />
+                    <line x1="100" y1="150" x2="100" y2="250" stroke="var(--primary-color)" stroke-width="2" />
+                    <circle cx="700" cy="150" r="10" fill="var(--secondary-color)" />
+                    <line x1="700" y1="150" x2="700" y2="250" stroke="var(--secondary-color)" stroke-width="2" />
+                </g>
+                <!-- Waves (Animated via JS) -->
+                <g id="waves"></g>
+                <!-- Model Box -->
+                <rect x="350" y="100" width="100" height="100" rx="10" fill="none" stroke="white" stroke-width="2" />
+                <text x="400" y="155" fill="white" text-anchor="middle" font-size="12">ML CORE</text>
+            </svg>
+        </div>
+    </section>
+
+    <section id="models" class="container">
+        <h2 class="bebas" style="font-size: 3rem; margin-bottom: 2rem;">MODEL PERFORMANCE COMPARISON</h2>
+        <div class="charts-grid" id="modelMetricsGrid">
+            <!-- Dynamically populated -->
+        </div>
+    </section>
+
+    <section id="dataset-explorer" class="container">
+        <h2 class="bebas" style="font-size: 3rem; margin-bottom: 2rem;">HERITAGE DATASET EXPLORER</h2>
+        <div class="glass-card">
+            <div class="table-wrapper">
+                <table id="datasetTable">
+                    <thead>
+                        <tr>
+                            <th>SITE</th>
+                            <th>DATE</th>
+                            <th>HOUR</th>
+                            <th>FOOTFALL</th>
+                            <th>TEMP</th>
+                            <th>SIGNALS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="datasetBody"></tbody>
+                </table>
+            </div>
+            <div style="margin-top: 1rem; text-align: center;">
+                <button class="btn-primary" onclick="loadPreviousPage()">PREV</button>
+                <span id="pageInfo" style="margin: 0 1rem;">PAGE 1</span>
+                <button class="btn-primary" onclick="loadNextPage()">NEXT</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>
