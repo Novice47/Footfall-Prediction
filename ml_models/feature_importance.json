@@ -1,0 +1,58 @@
+[
+    {
+        "feature": "mobile_signals",
+        "importance": 0.9897843521986748
+    },
+    {
+        "feature": "wifi_connections",
+        "importance": 0.005749626944768143
+    },
+    {
+        "feature": "visibility_km",
+        "importance": 0.001244684663236214
+    },
+    {
+        "feature": "prev_hour_footfall",
+        "importance": 0.0006122613629550355
+    },
+    {
+        "feature": "temperature",
+        "importance": 0.0005857051388484001
+    },
+    {
+        "feature": "humidity",
+        "importance": 0.0005812050601090126
+    },
+    {
+        "feature": "hour",
+        "importance": 0.0004333453659381642
+    },
+    {
+        "feature": "place_id",
+        "importance": 0.00028007979841135014
+    },
+    {
+        "feature": "day_of_week",
+        "importance": 0.00025578979555088317
+    },
+    {
+        "feature": "month",
+        "importance": 0.00025164740150438705
+    },
+    {
+        "feature": "season",
+        "importance": 9.5360799336439e-05
+    },
+    {
+        "feature": "is_holiday",
+        "importance": 5.06853588088208e-05
+    },
+    {
+        "feature": "is_weekend",
+        "importance": 3.8496301899306646e-05
+    },
+    {
+        "feature": "event_flag",
+        "importance": 3.6759809959072385e-05
+    }
+]
